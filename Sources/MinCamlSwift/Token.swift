@@ -45,44 +45,6 @@ public enum TokenKind: CustomStringConvertible {
     case output
     
     // MARK: Operator
-    /// '+'
-    case plus
-    /// '-'
-    case minus
-    /// '*'
-    case ast
-    /// '/'
-    case slash
-    /// '+.'
-    case plusDot
-    /// '-.'
-    case minusDot
-    /// '*.'
-    case astDot
-    /// '/.'
-    case slashDot
-    /// '='
-    case equal
-    /// '<>'
-    case lessGreater
-    /// '<='
-    case lessEqual
-    /// '>='
-    case greaterEqual
-    /// '<'
-    case less
-    /// '>'
-    case greater
-    /// The 'lxor' keyword
-    case lxor
-    /// The 'lor' keyword
-    case lor
-    /// The 'land' keyword
-    case land
-    /// The 'lsl' keyword
-    case lsl
-    /// The 'lsr' keyword
-    case lsr
     /// The 'not' keyword
     case not
     
@@ -95,6 +57,8 @@ public enum TokenKind: CustomStringConvertible {
     case boolean(value: Bool)
     /// An identifier
     case identifier(name: String)
+    /// An operator
+    case `operator`(name: String)
     /// A comment
     case comment
     
@@ -141,44 +105,6 @@ public enum TokenKind: CustomStringConvertible {
             return "Keyword input"
         case .output:
             return "Keyword output"
-        case .plus:
-            return "Plus '+'"
-        case .minus:
-            return "Minus '-'"
-        case .ast:
-            return "Multiply '*'"
-        case .slash:
-            return "Divide '/'"
-        case .plusDot:
-            return "Plus '+.'"
-        case .minusDot:
-            return "Minus '-.'"
-        case .astDot:
-            return "Multiply '*.'"
-        case .slashDot:
-            return "Divide '/.'"
-        case .equal:
-            return "Equal '='"
-        case .lessGreater:
-            return "Unequal '<>'"
-        case .lessEqual:
-            return "Less equal '<='"
-        case .greaterEqual:
-            return "Greater equal '>='"
-        case .less:
-            return "Less '<'"
-        case .greater:
-            return "Greater '>'"
-        case .lxor:
-            return "Xor 'lxor'"
-        case .lor:
-            return "Or 'lor'"
-        case .land:
-            return "And 'land'"
-        case .lsl:
-            return "Shift left 'lsl'"
-        case .lsr:
-            return "Shift right 'lsr'"
         case .not:
             return "Keyword not"
         case .integer(let value):
@@ -189,6 +115,8 @@ public enum TokenKind: CustomStringConvertible {
             return "Boolean \(value)"
         case .identifier(let name):
             return "Identifier \(name)"
+        case .operator(let name):
+            return "Operator \(name)"
         case .comment:
             return "Comment"
         case .leftParen:
@@ -235,44 +163,6 @@ public enum TokenKind: CustomStringConvertible {
             return "input"
         case .output:
             return "output"
-        case .plus:
-            return "+"
-        case .minus:
-            return "-"
-        case .ast:
-            return "*"
-        case .slash:
-            return "/"
-        case .plusDot:
-            return "+."
-        case .minusDot:
-            return "-."
-        case .astDot:
-            return "*."
-        case .slashDot:
-            return "/."
-        case .equal:
-            return "="
-        case .lessGreater:
-            return "<>"
-        case .lessEqual:
-            return "<="
-        case .greaterEqual:
-            return ">="
-        case .less:
-            return "<"
-        case .greater:
-            return ">"
-        case .lxor:
-            return "lxor"
-        case .lor:
-            return "lor"
-        case .land:
-            return "land"
-        case .lsl:
-            return "lsl"
-        case .lsr:
-            return "lsr"
         case .not:
             return "not"
         case .integer(let value):
@@ -282,6 +172,8 @@ public enum TokenKind: CustomStringConvertible {
         case .boolean(let value):
             return "\(value)"
         case .identifier(let name):
+            return "\(name)"
+        case .operator(let name):
             return "\(name)"
         case .comment:
             return "(* comment *)"
@@ -304,5 +196,94 @@ public enum TokenKind: CustomStringConvertible {
         case .endOfFile:
             return "eof"
         }
+    }
+}
+
+extension TokenKind: Equatable {
+    
+    public static func ==(lhs: TokenKind, rhs: TokenKind) -> Bool {
+        
+        switch (lhs, rhs) {
+        case (.if, .if):
+            return true
+        case (.then, .then):
+            return true
+        case (.else, .else):
+            return true
+        case (.let, .let):
+            return true
+        case (.in, .in):
+            return true
+        case (.rec, .rec):
+            return true
+        case (.fun, .fun):
+            return true
+        case (.createArray, .createArray):
+            return true
+        case (.input, .input):
+            return true
+        case (.output, .output):
+            return true
+        case (.not, .not):
+            return "true
+        case (.integer(let lhsValue), .integer(let rhsValue)) where lhsValue == rhsValue:
+            return true
+        case (.float(let lhsValue), .float(let rhsValue)) where lhsValue == rhsValue:
+            return true
+        case (.boolean(let lhsValue), .boolean(let rhsValue)) where lhsValue == rhsValue:
+            return true
+        case (.identifier(let lhsName), .identifier(let rhsName)) where lhsName == rhsName:
+            return true
+        case (.operator(let lhsName), .operator(let rhsName)) where lhsName == rhsName:
+            return true
+        case (.comment, .comment):
+            return true
+        case (.leftParen, .leftParen):
+            return true
+        case (.rightParen, .rightParen):
+            return true
+        case (.comma, .comma):
+            return true
+        case (.underscore, .underscore):
+            return true
+        case (.dot, .dot):
+            return true
+        case (.lessMinus, .lessMinus):
+            return true
+        case (.minusGreater, .minusGreater):
+            return true
+        case (.semicolon, .semicolon):
+            return true
+        case (.endOfFile, .endOfFile):
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+public func ==(token: Token, tokenKind: TokenKind) -> Bool {
+    
+    return token.payload == tokenKind
+}
+
+public func !=(token: Token, tokenKind: TokenKind) -> Bool {
+    
+    return !(token == tokenKind)
+}
+
+/// A token generated by the lexer
+public struct Token {
+    
+    /// The actual payload of the token
+    public let payload: TokenKind
+    
+    /// The source range where this token appeared
+    public let sourceRange: SourceRange
+    
+    init(_ payload: TokenKind, sourceRange: SourceRange) {
+        
+        self.payload = payload
+        self.sourceRange = sourceRange
     }
 }
