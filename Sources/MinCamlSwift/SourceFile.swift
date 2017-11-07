@@ -9,9 +9,11 @@ import Foundation
 
 /// Represents the source code that was contained in a `.ml` file
 public struct SourceFile: _ExpressibleByFileReferenceLiteral, CustomStringConvertible {
+    
     public let sourceCode: String
     
     public init(fileReferenceLiteralResourceName path: String) {
+        
         let url = Bundle.main.url(forResource: path, withExtension: nil)!
         sourceCode = try! String(contentsOf: url)
     }
@@ -20,10 +22,12 @@ public struct SourceFile: _ExpressibleByFileReferenceLiteral, CustomStringConver
     ///
     /// - Parameter sourceCode: The source code of the file
     public init(fromSourceCode sourceCode: String) {
+        
         self.sourceCode = sourceCode
     }
     
     public var description: String {
+        
         return sourceCode
     }
 }
