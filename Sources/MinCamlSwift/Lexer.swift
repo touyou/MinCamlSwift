@@ -8,6 +8,7 @@
 import Foundation
 
 // MARK: - UnicodeScalar extensions
+
 fileprivate extension UnicodeScalar {
     
     var isWhitespace: Bool {
