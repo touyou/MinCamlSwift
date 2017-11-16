@@ -362,3 +362,59 @@ public class LetRecExpression: Expression {
         super.init(sourceRange: sourceRange)
     }
 }
+
+/// Apply expression
+public class AppExpression: Expression {
+    
+    /// Apply one
+    public let appName: Expression
+    /// Arguments
+    public let arguments: [Expression]
+    
+    public init(appName: Expression, arguments: [Expression], sourceRange: SourceRange) {
+        
+        self.appName = appName
+        self.arguments = arguments
+        super.init(sourceRange: sourceRange)
+    }
+}
+
+/// Tuple of expressions
+public class TupleExpression: Expression {
+    
+    /// Expressions
+    public let expressions: [Expression]
+    
+    public init(expressions: [Expression], sourceRange: SourceRange) {
+        
+        self.expressions = expressions
+        super.init(sourceRange: sourceRange)
+    }
+}
+
+/// Let tuple expression
+public class LetTupleExpression: Expression {
+    
+    /// For arguments
+    public struct Arg {
+        public let name: String
+        public let type: Type
+    }
+    
+    /// Arguments
+    public let arguments: [Arg]
+    /// tuple
+    public let tuple: Expression
+    /// body
+    public let body: Expression
+    
+    public init(arguments: [Arg], tuple: Expression, body: Expression, sourceRange: SourceRange) {
+        
+        self.arguments = arguments
+        self.tuple = tuple
+        self.body = body
+        super.init(sourceRange: sourceRange)
+    }
+}
+
+
