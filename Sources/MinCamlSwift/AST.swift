@@ -417,4 +417,75 @@ public class LetTupleExpression: Expression {
     }
 }
 
+/// Array Expression
+public class ArrayExpression: Expression {
+    
+    /// name
+    public let name: Expression
+    /// size
+    public let size: Expression
+    
+    public init(name: Expression, size: Expression, sourceRange: SourceRange) {
+        
+        self.name = name
+        self.size = size
+        super.init(sourceRange: sourceRange)
+    }
+}
 
+/// Array Get Expression
+public class GetExpression: Expression {
+    
+    /// name
+    public let name: Expression
+    /// address
+    public let addr: Expression
+    
+    public init(name: Expression, addr: Expression: sourceRange: SourceRange) {
+        
+        self.name = name
+        self.addr = addr
+        super.init(sourceRange: sourceRange)
+    }
+}
+
+/// Array Put Expression
+public class PutExpression: Expression {
+    
+    /// name
+    public let name: Expression
+    /// address
+    public let addr: Expression
+    /// body
+    public let body: Expression
+    
+    public init(name: Expression, addr: Expression, body: Expression, sourceRange: SourceRange) {
+        
+        self.name = name
+        self.addr = addr
+        self.body = body
+        super.init(sourceRange: sourceRange)
+    }
+}
+
+// IO Expression
+public class IOExpression: Expression {
+    
+    public enum Type {
+        
+        case `in`
+        case out
+    }
+    
+    /// which in or out
+    public let type: Type
+    /// variable
+    public let exp: Expression
+    
+    public init(type: Type, exp: Expression, sourceRange: SourceRange) {
+        
+        self.type = type
+        self.exp = exp
+        super.init(sourceRange: sourceRange)
+    }
+}
