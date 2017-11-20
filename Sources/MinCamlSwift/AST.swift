@@ -441,7 +441,7 @@ public class GetExpression: Expression {
     /// address
     public let addr: Expression
     
-    public init(name: Expression, addr: Expression: sourceRange: SourceRange) {
+    public init(name: Expression, addr: Expression, sourceRange: SourceRange) {
         
         self.name = name
         self.addr = addr

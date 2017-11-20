@@ -89,9 +89,31 @@ class Parser {
     ///
     /// - Returns: The parsed expression
     /// - Throws: A CompilationError if compilation failed
-    private func parseSimpleExpression() throws -> Expression {
+    private func parseSimpleExpression() throws -> Expression? {
         
         switch nextToken.payload {
+        case .leftParen:
+            let startLoc = nextToken.sourceRange.start
+            try consumeToken()
+            if nextToken.payload == .rightParen {
+                
+                try consumeToken()
+                return Expression(sourceRange: range(startingAt: startLoc))
+            } else {
+                
+                let expression = try parseExpression()
+                if nextToken.payload == .rightParen {
+                    
+                    return expression
+                } else {
+                    
+                    throw CompilationError(sourceRange: range(startingAt: startLoc), errorMessage: "Expected ')'")
+                }
+            }
+        case .boolean(let value):
+            let sourceRange = nextToken.sourceRange
+            try consumeToken()
+            return BooleanLiteralExpression(value: value, sourceRange: sourceRange)
         case .integer(let value):
             let sourceRange = nextToken.sourceRange
             try consumeToken()
@@ -100,24 +122,71 @@ class Parser {
             let sourceRange = nextToken.sourceRange
             try consumeToken()
             return FloatLiteralExpression(value: value, sourceRange: sourceRange)
-        case .boolean(let value):
-            let sourceRange = nextToken.sourceRange
-            try consumeToken()
-            return BooleanLiteralExpression(value: value, sourceRange: sourceRange)
         case .identifier(let name):
             let sourceRange = nextToken.sourceRange
             try consumeToken()
             return VariableExpression(name: name, sourceRange: sourceRange)
-        case .leftParen:
-            let sourceRange = nextToken.sourceRange
-            try consumeToken()
-            if nextToken.payload == .rightParen {
+        default:
+            return nil
+        }
+    }
+    
+    private func parseExpression() throws -> Expression? {
+        
+        let simpleExpression = try parseSimpleExpression()
+        if let simpleExpression = simpleExpression {
+            
+            if nextToken.payload == .dot {
                 
-                return Expression(sourceRange: sourceRange)     // Unit
+                try consumeToken()  // dot
+                guard if nextToken.payload == .leftParen else {
+                    
+                    throw CompilationError(sourceRange: range(startingAt: simpleExpression.sourceRange.start), errorMessage: "Invalid syntax: Expected '('")
+                }
+                try consumeToken()  // (
+                let exp1 = try parseExpression()
+                guard if nextToken.payload == .rightParen else {
+                    
+                    throw CompilationError(sourceRange: range(startingAt: simpleExpression.sourceRange.start), errorMessage: "Invalid syntax: Expected ')'")
+                }
+                try consumeToken()  // )
+                if nextToken.payload == .lessMinus {
+                    
+                    try consumeToken()  // ->
+                    let exp2 = try parseExpression()
+                    return PutExpression(name: simpleExpression, addr: exp1, body: exp2, sourceRange: range(startingAt: simpleExpression.sourceRange.start))
+                } else {
+                    
+                    return GetExpression(name: simpleExpression, addr: exp1, sourceRange: range(startingAt: simpleExpression.sourceRange.start))
+                }
             } else {
                 
-                // TODO: normal expression
+                var args: [Expression] = []
+                while let exp = try parseSimpleExpression() {
+                    
+                    args.append(exp)
+                }
+                return AppExpression(appName: simpleExpression, arguments: args, sourceRange: simpleExpression.sourceRange.start)
             }
+        }
+        
+        // 無限ループを避けるために中置演算子はあとで処理する。
+        switch nextToken.payload {
+        case .not:
+            let startLoc = nextToken.sourceRange.start
+            try consumeToken()
+            let rhs = try parseExpression()
+            return SingleOperatorExpression(rhs: rhs, operator: .not)
+        case .operator(name: "-"):
+            let startLoc = nextToken.sourceRange.start
+            try consumeToken()
+            var floatFlag = false
+            if nextToken.payload == .dot {
+                
+                try consumeToken()
+                floatFlag = true
+            }
+            let exp = try parseExpression()
         }
     }
 }
